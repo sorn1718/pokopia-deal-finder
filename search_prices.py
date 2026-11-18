@@ -6,7 +6,7 @@ import requests
 from datetime import datetime, timezone
 
 API_KEY = os.environ["SERPAPI_API_KEY"]
-QUERY = "Pokémon Pokopia Nintendo Switch 2 kaufen"
+QUERY = "Pokopia"
 
 response = requests.get(
     "https://serpapi.com/search.json",
@@ -16,21 +16,42 @@ response = requests.get(
         "google_domain": "google.de",
         "gl": "de",
         "hl": "de",
+        "location": "Germany",
         "api_key": API_KEY
     },
     timeout=45
 )
+
 response.raise_for_status()
-results = response.json().get("shopping_results", [])
+result = response.json()
+
+shopping = result.get("shopping_results", [])
+
+print("Google Shopping Ergebnisse:", len(shopping))
 
 offers = []
 
-for item in results:
+for item in shopping:
     title = item.get("title", "")
+    
     if "pokopia" not in title.lower():
         continue
 
     price = item.get("extracted_price")
+
+    if price is None:
+        raw = str(item.get("price", ""))
+        match = re.search(r"(\d[\d.,]*)", raw)
+
+        if match:
+            value = match.group(1)
+            if "," in value:
+                value = value.replace(".", "").replace(",", ".")
+            try:
+                price = float(value)
+            except ValueError:
+                continue
+
     link = item.get("link")
 
     if price is None or not link:
@@ -49,7 +70,7 @@ for item in results:
 offers.sort(key=lambda x: x["price"])
 
 data = {
-    "product": "Pokémon Pokopia für Nintendo Switch 2",
+    "product": "Pokémon Pokopia Nintendo Switch 2",
     "checked_at": datetime.now(timezone.utc).isoformat(),
     "offers": offers,
     "best_price": offers[0]["price"] if offers else None
@@ -58,4 +79,10 @@ data = {
 with open("offers.json", "w", encoding="utf-8") as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
 
-print("Gefundene Angebote:", len(offers))
+print("Gefundene Pokopia-Angebote:", len(offers))
+
+if offers:
+    print("Bester Preis:", offers[0]["price"], "Euro")
+else:
+    print("Keine passenden Angebote gefunden.")
+    print("SerpApi Antwort:", result.get("search_metadata", {}).get("status"))
