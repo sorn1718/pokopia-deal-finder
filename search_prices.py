@@ -4,9 +4,17 @@ import os
 import requests
 from datetime import datetime, timezone
 
+# =====================================
+# POKOPIA DEAL FINDER
+# =====================================
+
 API_KEY = os.environ["SERPAPI_API_KEY"]
 
 QUERY = "Pokémon Pokopia Nintendo Switch 2 Spiel kaufen"
+
+# =====================================
+# GOOGLE SHOPPING ABFRAGEN
+# =====================================
 
 response = requests.get(
     "https://serpapi.com/search.json",
@@ -23,59 +31,98 @@ response = requests.get(
 )
 
 response.raise_for_status()
+
 result = response.json()
 
 shopping = result.get("shopping_results", [])
 
 print("Google Shopping Ergebnisse:", len(shopping))
 
-offers = []
-
-# Zubehör ausschließen
+# =====================================
+# UNERWÜNSCHTE PRODUKTE
+# =====================================
 
 excluded = [
-    "skin", "cover", "vinyl", "wrap",
-    "hülle", "case", "schlüsselanhänger",
-    "keychain", "controller", "tasche",
-    "schutzfolie", "sticker", "figur",
-    "plüschtier", "poster", "soundtrack",
-    "erweiterungspass", "expansion pass",
-    "bundle", "konsole", "console",
-    "joycon", "nintendo switch 2 +"
+    "erweiterungspass",
+    "expansion pass",
+    "skin",
+    "cover",
+    "vinyl",
+    "wrap",
+    "hülle",
+    "case",
+    "schlüsselanhänger",
+    "keychain",
+    "controller",
+    "tasche",
+    "schutzfolie",
+    "sticker",
+    "figur",
+    "plüschtier",
+    "poster",
+    "soundtrack",
+    "bundle",
+    "konsole",
+    "console",
+    "joycon",
+    "merchandise",
+    "zubehör",
+    "accessory",
+    "accessories",
+    "switch 2 + pokopia-set",
+    "lösungsbuch",
+    "guide"
 ]
 
-]
+# =====================================
+# ANGEBOTE FILTERN
+# =====================================
+
+offers = []
 
 for item in shopping:
 
     title = item.get("title", "")
     normalized = title.lower()
 
+    # Pokopia muss im Titel vorkommen
     if "pokopia" not in normalized:
         continue
 
+    # Zubehör und Erweiterungspässe ausschließen
     if any(word in normalized for word in excluded):
-        print("Zubehör ausgeschlossen:", title)
+        print("AUSGESCHLOSSEN:", title)
         continue
 
-    # Beide möglichen Link-Felder prüfen
-    link = item.get("product_link") or item.get("link")
-
+    # Preis auslesen
     price = item.get("extracted_price")
 
     if price is None:
-        print("Preis fehlt:", title)
+        print("KEIN PREIS:", title)
         continue
 
-    if not link:
-        print("Händlerlink fehlt:", title)
+    try:
+        price = float(price)
+    except (ValueError, TypeError):
         continue
+
+    if price <= 0:
+        continue
+
+    # Händlerlink auslesen
+    link = item.get("product_link") or item.get("link")
+
+    if not link:
+        print("KEIN LINK:", title)
+        continue
+
+    merchant = item.get("source", "Unbekannt")
 
     offer = {
         "title": title,
-        "price": float(price),
+        "price": round(price, 2),
         "currency": "EUR",
-        "merchant": item.get("source", "Unbekannt"),
+        "merchant": merchant,
         "url": link,
         "delivery": item.get("delivery"),
         "thumbnail": item.get("thumbnail")
@@ -83,10 +130,22 @@ for item in shopping:
 
     offers.append(offer)
 
-    print("ANGEBOT GEFUNDEN:", title, price, "Euro")
+    print(
+        "ANGEBOT GEFUNDEN:",
+        title,
+        price,
+        "Euro"
+    )
 
-# Nach Preis sortieren
+# =====================================
+# PREISE SORTIEREN
+# =====================================
+
 offers.sort(key=lambda x: x["price"])
+
+# =====================================
+# ERGEBNIS SPEICHERN
+# =====================================
 
 data = {
     "product": "Pokémon Pokopia für Nintendo Switch 2",
@@ -95,17 +154,48 @@ data = {
     "best_price": offers[0]["price"] if offers else None
 }
 
-with open("offers.json", "w", encoding="utf-8") as f:
-    json.dump(data, f, ensure_ascii=False, indent=2)
+with open("offers.json", "w", encoding="utf-8") as file:
+    json.dump(
+        data,
+        file,
+        ensure_ascii=False,
+        indent=2
+    )
+
+# =====================================
+# AUSGABE
+# =====================================
 
 print("--------------------------------")
+
 print("Gefundene Pokopia-Angebote:", len(offers))
 
 if offers:
-    print("GÜNSTIGSTER PREIS:", offers[0]["price"], "Euro")
-    print("HÄNDLER:", offers[0]["merchant"])
-    print("LINK:", offers[0]["url"])
+
+    print(
+        "GÜNSTIGSTER PREIS:",
+        offers[0]["price"],
+        "Euro"
+    )
+
+    print(
+        "HÄNDLER:",
+        offers[0]["merchant"]
+    )
+
+    print(
+        "LINK:",
+        offers[0]["url"]
+    )
+
 else:
-    print("Noch keine passenden Angebote gefunden.")
-    print("SerpApi Status:",
-          result.get("search_metadata", {}).get("status"))
+
+    print("Keine passenden Angebote gefunden.")
+
+    print(
+        "SerpApi Status:",
+        result.get("search_metadata", {}).get("status")
+    )
+
+print("--------------------------------")
+print("Pokopia Deal Finder beendet.")
