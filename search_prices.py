@@ -32,12 +32,18 @@ print("Google Shopping Ergebnisse:", len(shopping))
 offers = []
 
 # Zubehör ausschließen
+
 excluded = [
     "skin", "cover", "vinyl", "wrap",
     "hülle", "case", "schlüsselanhänger",
     "keychain", "controller", "tasche",
     "schutzfolie", "sticker", "figur",
-    "plüschtier", "poster", "soundtrack"
+    "plüschtier", "poster", "soundtrack",
+    "erweiterungspass", "expansion pass",
+    "bundle", "konsole", "console",
+    "joycon", "nintendo switch 2 +"
+]
+
 ]
 
 for item in shopping:
