@@ -1,12 +1,12 @@
 
 import json
 import os
-import re
 import requests
 from datetime import datetime, timezone
 
 API_KEY = os.environ["SERPAPI_API_KEY"]
-QUERY = "Pokopia"
+
+QUERY = "Pokémon Pokopia Nintendo Switch 2 Spiel kaufen"
 
 response = requests.get(
     "https://serpapi.com/search.json",
@@ -28,42 +28,44 @@ result = response.json()
 shopping = result.get("shopping_results", [])
 
 print("Google Shopping Ergebnisse:", len(shopping))
-for i, item in enumerate(shopping[:15], 1):
-    print(
-        "ERGEBNIS", i,
-        "TITEL:", repr(item.get("title")),
-        "PREIS:", item.get("price"),
-        "HÄNDLER:", item.get("source")
-    )
+
 offers = []
 
+# Zubehör ausschließen
+excluded = [
+    "skin", "cover", "vinyl", "wrap",
+    "hülle", "case", "schlüsselanhänger",
+    "keychain", "controller", "tasche",
+    "schutzfolie", "sticker", "figur",
+    "plüschtier", "poster", "soundtrack"
+]
+
 for item in shopping:
+
     title = item.get("title", "")
-    
-    if "pokopia" not in title.lower():
+    normalized = title.lower()
+
+    if "pokopia" not in normalized:
         continue
+
+    if any(word in normalized for word in excluded):
+        print("Zubehör ausgeschlossen:", title)
+        continue
+
+    # Beide möglichen Link-Felder prüfen
+    link = item.get("product_link") or item.get("link")
 
     price = item.get("extracted_price")
 
     if price is None:
-        raw = str(item.get("price", ""))
-        match = re.search(r"(\d[\d.,]*)", raw)
-
-        if match:
-            value = match.group(1)
-            if "," in value:
-                value = value.replace(".", "").replace(",", ".")
-            try:
-                price = float(value)
-            except ValueError:
-                continue
-
-    link = item.get("link")
-
-    if price is None or not link:
+        print("Preis fehlt:", title)
         continue
 
-    offers.append({
+    if not link:
+        print("Händlerlink fehlt:", title)
+        continue
+
+    offer = {
         "title": title,
         "price": float(price),
         "currency": "EUR",
@@ -71,12 +73,17 @@ for item in shopping:
         "url": link,
         "delivery": item.get("delivery"),
         "thumbnail": item.get("thumbnail")
-    })
+    }
 
+    offers.append(offer)
+
+    print("ANGEBOT GEFUNDEN:", title, price, "Euro")
+
+# Nach Preis sortieren
 offers.sort(key=lambda x: x["price"])
 
 data = {
-    "product": "Pokémon Pokopia Nintendo Switch 2",
+    "product": "Pokémon Pokopia für Nintendo Switch 2",
     "checked_at": datetime.now(timezone.utc).isoformat(),
     "offers": offers,
     "best_price": offers[0]["price"] if offers else None
@@ -85,10 +92,14 @@ data = {
 with open("offers.json", "w", encoding="utf-8") as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
 
+print("--------------------------------")
 print("Gefundene Pokopia-Angebote:", len(offers))
 
 if offers:
-    print("Bester Preis:", offers[0]["price"], "Euro")
+    print("GÜNSTIGSTER PREIS:", offers[0]["price"], "Euro")
+    print("HÄNDLER:", offers[0]["merchant"])
+    print("LINK:", offers[0]["url"])
 else:
-    print("Keine passenden Angebote gefunden.")
-    print("SerpApi Antwort:", result.get("search_metadata", {}).get("status"))
+    print("Noch keine passenden Angebote gefunden.")
+    print("SerpApi Status:",
+          result.get("search_metadata", {}).get("status"))
