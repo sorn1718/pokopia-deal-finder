@@ -28,7 +28,13 @@ result = response.json()
 shopping = result.get("shopping_results", [])
 
 print("Google Shopping Ergebnisse:", len(shopping))
-
+for i, item in enumerate(shopping[:15], 1):
+    print(
+        "ERGEBNIS", i,
+        "TITEL:", repr(item.get("title")),
+        "PREIS:", item.get("price"),
+        "HÄNDLER:", item.get("source")
+    )
 offers = []
 
 for item in shopping:
