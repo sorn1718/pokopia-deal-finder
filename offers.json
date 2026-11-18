@@ -1,16 +1,7 @@
 {
   "product": "Pokémon Pokopia für Nintendo Switch 2",
-  "checked_at": "2026-11-18T09:31:16.071006+00:00",
+  "checked_at": "2026-11-18T09:36:26.546952+00:00",
   "offers": [
-    {
-      "title": "Nintendo Switch Nintendo Pokémon Pokopia Erweiterungspass",
-      "price": 34.99,
-      "currency": "EUR",
-      "merchant": "Nintendo Store",
-      "url": "https://www.google.de/search?ibp=oshop&q=Pokémon Pokopia Nintendo Switch 2 Spiel kaufen&prds=catalogid:9836371980923002420,productid:8176387966273231876,headlineOfferDocid:4342690653503684422,imageDocid:6714807887149470403,rds:PC_9037439236771438158|PROD_PC_9037439236771438158,gpcid:9037439236771438158,mid:576462915540255576,pvt:hg&hl=de&gl=de&udm=28",
-      "delivery": null,
-      "thumbnail": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcTqgkhPZMMFU-WxuuFPKSTgvn9j5Fu-L7dcqwF9EtFjWv7ePQSKWL9nnDa7MgVlP4KuThObejrTvBwLJ4zF6aPAGV4RvU6d7nlYeTgR2tKIJex3EcHnrDCXXg"
-    },
     {
       "title": "Pokémon Pokopia Nintendo Switch 2",
       "price": 39.99,
@@ -109,16 +100,7 @@
       "url": "https://www.google.de/search?ibp=oshop&q=Pokémon Pokopia Nintendo Switch 2 Spiel kaufen&prds=catalogid:12426474106915842037,productid:6916906890128321010,headlineOfferDocid:11760205409527002932,imageDocid:14108802728730768547,rds:PC_11781554958855164762|PROD_PC_11781554958855164762,gpcid:11781554958855164762,mid:576462912476989406,pvt:hg&hl=de&gl=de&udm=28",
       "delivery": null,
       "thumbnail": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRk3EAVx1FDCfzB5laAF366DckP01f54W3R4QOXncMiZmxmq_GVi72Hoj2m3sL7bVwnsr2fJLKhCTKwMqMAsvKPPPg9j0coW1_FR3zcLEwzTS78DpCO1Df5wQ"
-    },
-    {
-      "title": "NINTENDO Switch 2 Konsolen-Set \"Switch 2 + Pokémon Pokopia",
-      "price": 539.99,
-      "currency": "EUR",
-      "merchant": "Baur Versand",
-      "url": "https://www.google.de/search?ibp=oshop&q=Pokémon Pokopia Nintendo Switch 2 Spiel kaufen&prds=catalogid:1065505771563986491,productid:7443891337661486729,headlineOfferDocid:7108214508671754336,imageDocid:4263814099163520696,gpcid:3926376736598213449,mid:576462912475051037,pvt:hg&hl=de&gl=de&udm=28",
-      "delivery": null,
-      "thumbnail": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQEigvtLke6HXCApSt0Ro3CdZAkLGxacHL1LNiecSrOGPrLhgc1PGHACGRluIARAtM4l-dRHxDKFPkkiUXbAMY_xYGzhXZJag"
     }
   ],
-  "best_price": 34.99
+  "best_price": 39.99
 }
