@@ -1,6 +1,7 @@
 
 import json
 import os
+import re
 import requests
 from datetime import datetime, timezone
 from urllib.parse import urlparse
@@ -22,14 +23,18 @@ EXCLUDED = [
 ]
 
 DIGITAL = [
-    "download-code", "download code", "digital code",
-    "eshop", "e-shop", "game key", "download",
-    "digital version"
+    "download-code", "download code",
+    "digital code", "eshop", "e-shop",
+    "game key", "digital version",
+    "download version"
 ]
 
 PHYSICAL = [
     "spielkarte", "game card", "cartridge",
-    "physisch", "physical", "at-pegi"
+    "physisch", "physical", "at-pegi",
+    "switch2-spiel", "switch 2 spiel",
+    "nintendo switch 2 spiel",
+    "nintendo switch 2 game"
 ]
 
 
@@ -37,17 +42,33 @@ PHYSICAL = [
 # 1. KATEGORIE ERMITTELN
 # =================================
 
-def category(title):
+def category(store_title, product_title=""):
 
-    t = title.lower()
+    store = store_title.lower()
+    product = product_title.lower()
 
-    if any(word in t for word in EXCLUDED):
+    if any(word in store for word in EXCLUDED):
         return None
 
-    if any(word in t for word in DIGITAL):
+    # Zuerst den eigentlichen Händlertitel prüfen
+    if any(word in store for word in DIGITAL):
         return "digital"
 
-    if any(word in t for word in PHYSICAL):
+    if any(word in store for word in PHYSICAL):
+        return "physical"
+
+    # Produkttitel nur als zusätzliche Information
+    if any(word in product for word in DIGITAL):
+        return "digital"
+
+    if any(word in product for word in PHYSICAL):
+        return "physical"
+
+    # Switch-2-Spiel ohne Digital-Kennzeichnung
+    if (
+        "switch 2" in store
+        or "switch2" in store
+    ):
         return "physical"
 
     return "unknown"
@@ -77,7 +98,33 @@ def valid_store_link(link):
 
 
 # =================================
-# 3. GOOGLE SHOPPING SUCHEN
+# 3. PREIS ERMITTELN
+# =================================
+
+def get_price(store):
+
+    total = store.get("extracted_total")
+
+    price = store.get("extracted_price")
+
+    # Gesamtpreis inklusive Versand bevorzugen
+    if total is not None:
+        try:
+            return round(float(total), 2)
+        except (ValueError, TypeError):
+            pass
+
+    if price is not None:
+        try:
+            return round(float(price), 2)
+        except (ValueError, TypeError):
+            return None
+
+    return None
+
+
+# =================================
+# 4. GOOGLE SHOPPING SUCHEN
 # =================================
 
 response = requests.get(
@@ -95,13 +142,15 @@ response = requests.get(
 
 response.raise_for_status()
 
-shopping = response.json().get("shopping_results", [])
+shopping_data = response.json()
+
+shopping = shopping_data.get("shopping_results", [])
 
 print("Shopping-Ergebnisse:", len(shopping))
 
 
 # =================================
-# 4. PRODUKTSEITEN SAMMELN
+# 5. PRODUKTSEITEN SAMMELN
 # =================================
 
 products = {}
@@ -128,7 +177,7 @@ print("Produktseiten:", len(product_ids))
 
 
 # =================================
-# 5. HÄNDLERANGEBOTE ABRUFEN
+# 6. HÄNDLERANGEBOTE ABRUFEN
 # =================================
 
 offers = []
@@ -159,55 +208,46 @@ for product_id in product_ids:
 
         stores = product.get("stores", [])
 
-        # DEBUG-AUSGABEN
-        print("DEBUG Produkt:", product.get("title"))
-        print("DEBUG Produktdaten:", list(product.keys()))
-        print("DEBUG Händleranzahl:", len(stores))
+        product_title = (
+            product.get("title")
+            or products[product_id]
+        )
 
-        for s in stores[:5]:
-            print("DEBUG Händler:", s)
+        print("--------------------------------")
+        print("DEBUG PRODUKT:", product_title)
+        print("DEBUG HÄNDLERANZAHL:", len(stores))
 
-        # HÄNDLERANGEBOTE VERARBEITEN
         for store in stores:
 
-            store_title = store.get("title") or ""
-
-            product_title = (
-                product.get("title")
-                or products[product_id]
+            store_title = (
+                store.get("title")
+                or product_title
             )
 
-            combined_title = store_title + " " + product_title
-
-            if "pokopia" not in combined_title.lower():
-                continue
-
-            kind = category(combined_title)
+            kind = category(store_title, product_title)
 
             if kind is None:
-                print("AUSGESCHLOSSEN:", combined_title)
+                print("AUSGESCHLOSSEN:", store_title)
                 continue
 
-            price = store.get("extracted_price")
+            price = get_price(store)
+
+            if price is None or price <= 0:
+                continue
+
             link = store.get("link")
 
-            if price is None:
-                continue
-
             if not valid_store_link(link):
-                continue
-
-            try:
-                price = float(price)
-            except (ValueError, TypeError):
-                continue
-
-            if price <= 0:
+                print("UNGÜLTIGER LINK:", store_title)
                 continue
 
             merchant = store.get("name") or "Unbekannt"
 
-            unique_id = (merchant.lower(), link, kind)
+            unique_id = (
+                merchant.lower(),
+                link,
+                kind
+            )
 
             if unique_id in seen:
                 continue
@@ -215,13 +255,15 @@ for product_id in product_ids:
             seen.add(unique_id)
 
             offer = {
-                "title": store_title or product_title,
-                "price": round(price, 2),
+                "title": store_title,
+                "price": price,
                 "currency": "EUR",
                 "merchant": merchant,
                 "url": link,
                 "type": kind,
-                "delivery": store.get("shipping", "")
+                "delivery": store.get("shipping", ""),
+                "item_price": store.get("extracted_price"),
+                "total_price": store.get("extracted_total")
             }
 
             offers.append(offer)
@@ -237,14 +279,14 @@ for product_id in product_ids:
     except Exception as error:
 
         print(
-            "Fehler bei Produkt",
+            "FEHLER BEI PRODUKT:",
             product_id,
             error
         )
 
 
 # =================================
-# 6. PREISE SORTIEREN
+# 7. PREISE SORTIEREN
 # =================================
 
 offers.sort(key=lambda x: x["price"])
@@ -266,7 +308,7 @@ unknown = [
 
 
 # =================================
-# 7. ERGEBNIS SPEICHERN
+# 8. ERGEBNIS SPEICHERN
 # =================================
 
 data = {
@@ -293,10 +335,13 @@ data = {
         if digital else None
     ),
 
+    "unknown_best": (
+        unknown[0]["price"]
+        if unknown else None
+    ),
+
     "physical_offers": physical,
-
     "digital_offers": digital,
-
     "unknown_offers": unknown
 }
 
@@ -312,21 +357,19 @@ with open("offers.json", "w", encoding="utf-8") as file:
 
 
 # =================================
-# 8. ERGEBNIS AUSGEBEN
+# 9. ERGEBNIS AUSGEBEN
 # =================================
 
 print("--------------------------------")
+print("POKOPIA DEAL FINDER")
+print("--------------------------------")
 
 print("GESAMTANGEBOTE:", len(offers))
-
 print("PHYSISCH:", len(physical))
-
 print("DIGITAL:", len(digital))
-
 print("UNKLAR:", len(unknown))
 
 if physical:
-
     print(
         "BESTER PHYSISCHER PREIS:",
         physical[0]["price"],
@@ -334,7 +377,6 @@ if physical:
     )
 
 if digital:
-
     print(
         "BESTER DIGITALER PREIS:",
         digital[0]["price"],
@@ -342,16 +384,12 @@ if digital:
     )
 
 if unknown:
-
-    print("NICHT EINDEUTIGE ANGEBOTE:")
-
-    for offer in unknown:
-        print(
-            offer["merchant"],
-            offer["price"],
-            "Euro"
-        )
+    print(
+        "BESTER UNKLARER PREIS:",
+        unknown[0]["price"],
+        "Euro"
+    )
 
 print("--------------------------------")
-
+print("offers.json ERFOLGREICH GESPEICHERT")
 print("POKOPIA DEAL FINDER FERTIG")
