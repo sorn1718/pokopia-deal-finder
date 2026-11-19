@@ -1,7 +1,6 @@
 
 import json
 import os
-import re
 import requests
 from datetime import datetime, timezone
 from urllib.parse import urlparse
@@ -42,32 +41,48 @@ PHYSICAL = [
 # 1. KATEGORIE ERMITTELN
 # =================================
 
-def category(store_title, product_title=""):
+def contains_any(text, words):
+    text = (text or "").lower()
+    return any(word in text for word in words)
 
-    store = store_title.lower()
-    product = product_title.lower()
 
-    if any(word in store for word in EXCLUDED):
+def category(store_title, product_title="", search_title=""):
+
+    store = (store_title or "").lower()
+    product = (product_title or "").lower()
+    search = (search_title or "").lower()
+
+    if contains_any(store, EXCLUDED):
         return None
 
-    # Zuerst den eigentlichen Händlertitel prüfen
-    if any(word in store for word in DIGITAL):
+    # Eindeutige Angaben im Händlertitel haben Vorrang
+    if contains_any(store, DIGITAL):
         return "digital"
 
-    if any(word in store for word in PHYSICAL):
+    if contains_any(store, PHYSICAL):
         return "physical"
 
-    # Produkttitel nur als zusätzliche Information
-    if any(word in product for word in DIGITAL):
+    # Danach die Produktseite prüfen
+    if contains_any(product, DIGITAL):
         return "digital"
 
-    if any(word in product for word in PHYSICAL):
+    if contains_any(product, PHYSICAL):
         return "physical"
 
-    # Switch-2-Spiel ohne Digital-Kennzeichnung
+    # Zuletzt den ursprünglichen Shopping-Titel prüfen
+    if contains_any(search, DIGITAL):
+        return "digital"
+
+    if contains_any(search, PHYSICAL):
+        return "physical"
+
+    # Ein normaler Pokopia-Produktdatensatz ohne Digital-Kennzeichnung
+    # wird als physische Ausgabe behandelt, wenn Switch 2 genannt ist.
     if (
-        "switch 2" in store
-        or "switch2" in store
+        "switch 2" in product
+        or "switch2" in product
+        or "switch 2" in search
+        or "switch2" in search
     ):
         return "physical"
 
@@ -104,10 +119,8 @@ def valid_store_link(link):
 def get_price(store):
 
     total = store.get("extracted_total")
-
     price = store.get("extracted_price")
 
-    # Gesamtpreis inklusive Versand bevorzugen
     if total is not None:
         try:
             return round(float(total), 2)
@@ -143,7 +156,6 @@ response = requests.get(
 response.raise_for_status()
 
 shopping_data = response.json()
-
 shopping = shopping_data.get("shopping_results", [])
 
 print("Shopping-Ergebnisse:", len(shopping))
@@ -162,7 +174,7 @@ for item in shopping:
     if "pokopia" not in title.lower():
         continue
 
-    if any(word in title.lower() for word in EXCLUDED):
+    if contains_any(title, EXCLUDED):
         continue
 
     product_id = item.get("product_id")
@@ -203,9 +215,7 @@ for product_id in product_ids:
         product_response.raise_for_status()
 
         product_data = product_response.json()
-
         product = product_data.get("product_results", {})
-
         stores = product.get("stores", [])
 
         product_title = (
@@ -213,9 +223,28 @@ for product_id in product_ids:
             or products[product_id]
         )
 
+        search_title = products[product_id]
+
         print("--------------------------------")
         print("DEBUG PRODUKT:", product_title)
         print("DEBUG HÄNDLERANZAHL:", len(stores))
+
+        # Produktgruppe einmal zentral bestimmen
+        if contains_any(product_title, DIGITAL) or contains_any(search_title, DIGITAL):
+            group_type = "digital"
+        elif contains_any(product_title, PHYSICAL) or contains_any(search_title, PHYSICAL):
+            group_type = "physical"
+        elif (
+            "switch 2" in product_title.lower()
+            or "switch2" in product_title.lower()
+            or "switch 2" in search_title.lower()
+            or "switch2" in search_title.lower()
+        ):
+            group_type = "physical"
+        else:
+            group_type = "unknown"
+
+        print("PRODUKTGRUPPE:", group_type)
 
         for store in stores:
 
@@ -224,11 +253,18 @@ for product_id in product_ids:
                 or product_title
             )
 
-            kind = category(store_title, product_title)
-
-            if kind is None:
+            if contains_any(store_title, EXCLUDED):
                 print("AUSGESCHLOSSEN:", store_title)
                 continue
+
+            # Eindeutige Händlerangaben dürfen die Gruppe korrigieren.
+            # Sonst bleibt die Kategorie der Produktgruppe maßgeblich.
+            if contains_any(store_title, DIGITAL):
+                kind = "digital"
+            elif contains_any(store_title, PHYSICAL):
+                kind = "physical"
+            else:
+                kind = group_type
 
             price = get_price(store)
 
