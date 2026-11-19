@@ -159,6 +159,14 @@ for product_id in product_ids:
         product = product_data.get("product_results", {})
 
         stores = product.get("stores", [])
+        
+        print("DEBUG Produkt:", product.get("title"))
+        print("DEBUG Produktdaten:", list(product.keys()))
+        print("DEBUG Händleranzahl:", len(stores))
+
+     for s in stores[:5]:
+    print("DEBUG Händler:", s)
+
 
         # WICHTIG: Diese Schleife gehört in den try-Block
         for store in stores:
