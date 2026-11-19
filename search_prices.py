@@ -169,72 +169,70 @@ for product_id in product_ids:
 
         stores = product.get("stores", [])
 
-        for store in stores:
+        
+for store in stores:
 
-            # Nur den tatsächlichen Händlertitel verwenden
-            title = (
-                store.get("title")
-                or product.get("title")
-                or products[product_id]
-            )
+    store_title = store.get("title") or ""
 
-            if "pokopia" not in title.lower():
-                continue
+    product_title = (
+        product.get("title")
+        or products[product_id]
+    )
 
-            kind = category(title)
+    # Beide Titel für die Prüfung verwenden
+    combined_title = store_title + " " + product_title
 
-            if kind is None:
-                print("AUSGESCHLOSSEN:", title)
-                continue
+    if "pokopia" not in combined_title.lower():
+        continue
 
-            price = store.get("extracted_price")
+    kind = category(combined_title)
 
-            if price is None:
-                continue
+    if kind is None:
+        continue
 
-            try:
-                price = float(price)
-            except (ValueError, TypeError):
-                continue
+    price = store.get("extracted_price")
+    link = store.get("link")
 
-            if price <= 0:
-                continue
+    if price is None or not valid_store_link(link):
+        continue
 
-            link = store.get("link")
+    try:
+        price = float(price)
+    except (ValueError, TypeError):
+        continue
 
-            if not valid_store_link(link):
-                print("Ungültiger Händlerlink:", title)
-                continue
+    if price <= 0:
+        continue
 
-            merchant = store.get("name", "Unbekannt")
+    merchant = store.get("name", "Unbekannt")
 
-            # Doppelte Angebote vermeiden
-            unique_id = (merchant.lower(), link, kind)
+    unique_id = (merchant.lower(), link, kind)
 
-            if unique_id in seen:
-                continue
+    if unique_id in seen:
+        continue
 
-            seen.add(unique_id)
+    seen.add(unique_id)
 
-            offer = {
-                "title": title,
-                "price": round(price, 2),
-                "currency": "EUR",
-                "merchant": merchant,
-                "url": link,
-                "type": kind,
-                "delivery": store.get("shipping", "")
-            }
+    offer = {
+        "title": store_title or product_title,
+        "price": round(price, 2),
+        "currency": "EUR",
+        "merchant": merchant,
+        "url": link,
+        "type": kind,
+        "delivery": store.get("shipping", "")
+    }
 
-            offers.append(offer)
+    offers.append(offer)
 
-            print(
-                "ANGEBOT:",
-                kind,
-                merchant,
-                price,
-                "Euro"
-            )
+    print(
+        "ANGEBOT:",
+        kind,
+        merchant,
+        price,
+        "Euro"
+    )
+
 
     except Exception as error:
 
