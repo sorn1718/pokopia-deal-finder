@@ -50,8 +50,8 @@ DIGITAL = [
     "digital version"
 ]
 
-def category(title):
 
+def category(title):
     t = title.lower()
 
     if any(word in t for word in EXCLUDED):
@@ -60,9 +60,11 @@ def category(title):
     if any(word in t for word in DIGITAL):
         return "digital"
 
-    # Nicht ausdrücklich digital gekennzeichnete
-    # Händlerangebote werden als physisch geführt.
-    return "physical"
+    if any(word in t for word in PHYSICAL):
+        return "physical"
+
+    return "unknown"
+
 
 
 def valid_store_link(link):
