@@ -1,6 +1,6 @@
 {
   "product": "Pokémon Pokopia Nintendo Switch 2",
-  "checked_at": "2026-11-19T09:34:04.468641+00:00",
+  "checked_at": "2026-11-19T09:35:37.755381+00:00",
   "offers": [
     {
       "title": "Pokémon Pokopia - Nintendo Switch 2",
@@ -8,7 +8,7 @@
       "currency": "EUR",
       "merchant": "Amazon.de",
       "url": "https://www.amazon.de/Pok%C3%A9mon-Pokopia-Nintendo-Switch-2/dp/B0G1V1FRGM?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=A3JWKAKR8XB7XF&language=de_DE",
-      "type": "unknown",
+      "type": "physical",
       "delivery": "Kostenlos",
       "item_price": 60.71,
       "total_price": 60.71
@@ -41,7 +41,7 @@
       "currency": "EUR",
       "merchant": "guenstiger.de",
       "url": "https://www.guenstiger.de/Produkt/Nintendo/Pokemon_Pokopia_Switch_2.html?p=364664&gtin=4255839760373",
-      "type": "physical",
+      "type": "digital",
       "delivery": "",
       "item_price": 69.99,
       "total_price": null
@@ -52,7 +52,7 @@
       "currency": "EUR",
       "merchant": "saturn.de",
       "url": "https://www.saturn.de/de/product/_pokemon-pokopia-nintendo-switch-2-3024870.html?utm_source=google&utm_medium=seo-product%20feed&srsltid=AYCX9vLNJjH4Y-feJm4m8PWHmrNz6dILJCkHdGy1KHSDVGcdPUERu8ljfW0",
-      "type": "unknown",
+      "type": "physical",
       "delivery": "+ 2,99 €",
       "item_price": 67.99,
       "total_price": 70.98
@@ -63,27 +63,49 @@
       "currency": "EUR",
       "merchant": "Nintendo Store",
       "url": "https://store.nintendo.com/de-de/pokemon-pokopia-000000000010016194?srsltid=AYCX9vKgccMe-vcJRQQIUCN60X79UVIPnQG1sqZ8cA1xyB01AXO4qkIxHsY",
-      "type": "unknown",
+      "type": "physical",
       "delivery": "+ 5,99 €",
       "item_price": 79.99,
       "total_price": 85.98
     }
   ],
   "best_price": 60.71,
-  "physical_best": 69.99,
+  "physical_best": 60.71,
   "digital_best": 69.99,
-  "unknown_best": 60.71,
+  "unknown_best": null,
   "physical_offers": [
     {
-      "title": "Nintendo Pokémon Pokopia Switch 2 - Switch2-Spiel",
-      "price": 69.99,
+      "title": "Pokémon Pokopia - Nintendo Switch 2",
+      "price": 60.71,
       "currency": "EUR",
-      "merchant": "guenstiger.de",
-      "url": "https://www.guenstiger.de/Produkt/Nintendo/Pokemon_Pokopia_Switch_2.html?p=364664&gtin=4255839760373",
+      "merchant": "Amazon.de",
+      "url": "https://www.amazon.de/Pok%C3%A9mon-Pokopia-Nintendo-Switch-2/dp/B0G1V1FRGM?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=A3JWKAKR8XB7XF&language=de_DE",
       "type": "physical",
-      "delivery": "",
-      "item_price": 69.99,
-      "total_price": null
+      "delivery": "Kostenlos",
+      "item_price": 60.71,
+      "total_price": 60.71
+    },
+    {
+      "title": "Pokémon Pokopia - [Nintendo Switch 2]",
+      "price": 70.98,
+      "currency": "EUR",
+      "merchant": "saturn.de",
+      "url": "https://www.saturn.de/de/product/_pokemon-pokopia-nintendo-switch-2-3024870.html?utm_source=google&utm_medium=seo-product%20feed&srsltid=AYCX9vLNJjH4Y-feJm4m8PWHmrNz6dILJCkHdGy1KHSDVGcdPUERu8ljfW0",
+      "type": "physical",
+      "delivery": "+ 2,99 €",
+      "item_price": 67.99,
+      "total_price": 70.98
+    },
+    {
+      "title": "Pokémon Pokopia",
+      "price": 85.98,
+      "currency": "EUR",
+      "merchant": "Nintendo Store",
+      "url": "https://store.nintendo.com/de-de/pokemon-pokopia-000000000010016194?srsltid=AYCX9vKgccMe-vcJRQQIUCN60X79UVIPnQG1sqZ8cA1xyB01AXO4qkIxHsY",
+      "type": "physical",
+      "delivery": "+ 5,99 €",
+      "item_price": 79.99,
+      "total_price": 85.98
     }
   ],
   "digital_offers": [
@@ -108,41 +130,18 @@
       "delivery": "Kostenlos",
       "item_price": 69.99,
       "total_price": 69.99
+    },
+    {
+      "title": "Nintendo Pokémon Pokopia Switch 2 - Switch2-Spiel",
+      "price": 69.99,
+      "currency": "EUR",
+      "merchant": "guenstiger.de",
+      "url": "https://www.guenstiger.de/Produkt/Nintendo/Pokemon_Pokopia_Switch_2.html?p=364664&gtin=4255839760373",
+      "type": "digital",
+      "delivery": "",
+      "item_price": 69.99,
+      "total_price": null
     }
   ],
-  "unknown_offers": [
-    {
-      "title": "Pokémon Pokopia - Nintendo Switch 2",
-      "price": 60.71,
-      "currency": "EUR",
-      "merchant": "Amazon.de",
-      "url": "https://www.amazon.de/Pok%C3%A9mon-Pokopia-Nintendo-Switch-2/dp/B0G1V1FRGM?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=A3JWKAKR8XB7XF&language=de_DE",
-      "type": "unknown",
-      "delivery": "Kostenlos",
-      "item_price": 60.71,
-      "total_price": 60.71
-    },
-    {
-      "title": "Pokémon Pokopia - [Nintendo Switch 2]",
-      "price": 70.98,
-      "currency": "EUR",
-      "merchant": "saturn.de",
-      "url": "https://www.saturn.de/de/product/_pokemon-pokopia-nintendo-switch-2-3024870.html?utm_source=google&utm_medium=seo-product%20feed&srsltid=AYCX9vLNJjH4Y-feJm4m8PWHmrNz6dILJCkHdGy1KHSDVGcdPUERu8ljfW0",
-      "type": "unknown",
-      "delivery": "+ 2,99 €",
-      "item_price": 67.99,
-      "total_price": 70.98
-    },
-    {
-      "title": "Pokémon Pokopia",
-      "price": 85.98,
-      "currency": "EUR",
-      "merchant": "Nintendo Store",
-      "url": "https://store.nintendo.com/de-de/pokemon-pokopia-000000000010016194?srsltid=AYCX9vKgccMe-vcJRQQIUCN60X79UVIPnQG1sqZ8cA1xyB01AXO4qkIxHsY",
-      "type": "unknown",
-      "delivery": "+ 5,99 €",
-      "item_price": 79.99,
-      "total_price": 85.98
-    }
-  ]
+  "unknown_offers": []
 }
