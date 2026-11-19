@@ -1,42 +1,655 @@
+
 <!doctype html>
-<html lang="de"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#101827"><meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Pokopia Deals">
-<link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pokopia Deals">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+
 <title>Pokopia Deal-Finder</title>
+
 <style>
-:root{color-scheme:dark;--bg:#0b1220;--panel:#141f30;--panel2:#1b2940;--text:#f4f7fb;--muted:#a8b4c5;--green:#69df9a;--line:#2b3a50;--blue:#83b7ff}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#17263a 0,#0b1220 300px);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 16px calc(28px + env(safe-area-inset-bottom)}
-main{max-width:720px;margin:auto}header{padding:22px 4px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.brand{display:flex;align-items:center;gap:12px}.logo{width:48px;height:48px;border-radius:15px;background:#213b54;display:grid;place-items:center;font-size:25px}h1{font-size:21px;margin:0 0 3px}.sub{color:var(--muted);font-size:13px}
-button{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:12px;padding:11px 14px;font-size:14px;font-weight:650}
-.hero{background:linear-gradient(135deg,#1c3d43,#1a2b40 70%);border:1px solid #34545a;border-radius:22px;padding:20px;margin:8px 0 16px}.eyebrow{font-size:12px;color:#b7d7d0;text-transform:uppercase;letter-spacing:.09em;font-weight:700}
-.hero h2{font-size:23px;margin:8px 0}.hero p{color:#c1d0dc;font-size:14px;line-height:1.45;margin:0}.status{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px;margin-top:16px}
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}.tab{background:transparent;color:var(--muted)}.tab.active{background:#263b52;color:white;border-color:#54718e}
-.summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 18px}.metric{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:14px}.label{color:var(--muted);font-size:12px}.value{font-size:24px;font-weight:800;margin-top:6px;color:var(--green)}
-.section-title{font-size:17px;margin:20px 2px 10px}.offer{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:14px;margin:9px 0}
-.offer-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.offer-title{font-size:14px;line-height:1.35;font-weight:700}.price{font-size:19px;font-weight:800;color:var(--green);white-space:nowrap}
-.merchant{color:var(--muted);font-size:12px;margin-top:8px}.offer-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
-a{color:var(--blue);text-decoration:none;font-size:13px;font-weight:700}.tag{display:inline-block;background:#26394d;color:#c7d8e8;border-radius:20px;padding:5px 8px;font-size:11px}
-.empty,.notice{background:var(--panel);border:1px dashed var(--line);border-radius:16px;padding:18px;color:var(--muted);font-size:14px;line-height:1.5}footer{color:var(--muted);font-size:11px;line-height:1.5;text-align:center;padding:24px 8px}#message{color:var(--muted);font-size:12px;min-height:18px;margin:8px 2px}
-</style></head><body><main>
-<header><div class="brand"><div class="logo">🎮</div><div><h1>Pokopia Deal-Finder</h1><div class="sub">Dein täglicher Preisvergleich</div></div></div><button id="refresh">↻ Aktualisieren</button></header>
-<section class="hero"><div class="eyebrow">Nintendo Switch 2</div><h2>Pokémon Pokopia</h2><p>Vergleiche physische Spielkarten und digitale Download-Angebote. Die Preise stammen aus deinem täglichen Suchlauf.</p><div class="status"><span id="lastChecked">Lade Suchstand …</span><span id="totalCount">– Angebote</span></div></section>
-<div class="summary"><div class="metric"><div class="label">Günstigste Spielkarte</div><div class="value" id="physicalBest">–</div></div><div class="metric"><div class="label">Günstigster Digital-Code</div><div class="value" id="digitalBest">–</div></div></div>
-<div class="tabs"><button class="tab active" id="physicalTab">Spielkarte</button><button class="tab" id="digitalTab">Digital</button></div>
-<section><h3 class="section-title" id="listTitle">Physische Spielkarten</h3><div id="offers"><div class="empty">Angebote werden geladen …</div></div></section>
-<div id="message"></div><div class="notice">Hinweis: Preisangaben und Produktzuordnung können fehlerhaft sein. Prüfe beim Händler Edition, Plattform, Lieferkosten und ob es wirklich das vollständige Spiel ist.</div>
-<footer>Die Suche läuft täglich über GitHub Actions. Diese Seite zeigt den zuletzt gespeicherten Stand aus offers.json. "Aktualisieren" lädt den letzten Suchstand neu.</footer>
+:root {
+  color-scheme: dark;
+  --panel: #141f30;
+  --panel2: #1b2940;
+  --text: #f4f7fb;
+  --muted: #a8b4c5;
+  --green: #69df9a;
+  --line: #2b3a50;
+  --blue: #83b7ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(180deg,#17263a 0,#0b1220 300px);
+  color: var(--text);
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  padding: env(safe-area-inset-top) 16px
+    calc(28px + env(safe-area-inset-bottom));
+}
+
+main {
+  max-width: 720px;
+  margin: auto;
+}
+
+header {
+  padding: 22px 4px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  background: #213b54;
+  display: grid;
+  place-items: center;
+  font-size: 25px;
+}
+
+h1 {
+  font-size: 21px;
+  margin: 0 0 3px;
+}
+
+.sub {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+button {
+  border: 1px solid var(--line);
+  background: var(--panel2);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+button:disabled {
+  opacity: .5;
+}
+
+.hero {
+  background: linear-gradient(135deg,#1c3d43,#1a2b40 70%);
+  border: 1px solid #34545a;
+  border-radius: 22px;
+  padding: 20px;
+  margin: 8px 0 16px;
+}
+
+.eyebrow {
+  font-size: 12px;
+  color: #b7d7d0;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  font-weight: 700;
+}
+
+.hero h2 {
+  font-size: 23px;
+  margin: 8px 0;
+}
+
+.hero p {
+  color: #c1d0dc;
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.status {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 16px;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 12px 0 18px;
+}
+
+.metric {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  padding: 14px;
+}
+
+.label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.value {
+  font-size: 24px;
+  font-weight: 800;
+  margin-top: 6px;
+  color: var(--green);
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 7px;
+  margin: 14px 0;
+}
+
+.tab {
+  background: transparent;
+  color: var(--muted);
+  padding: 11px 5px;
+}
+
+.tab.active {
+  background: #263b52;
+  color: white;
+  border-color: #54718e;
+}
+
+.section-title {
+  font-size: 17px;
+  margin: 20px 2px 10px;
+}
+
+.offer {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  padding: 14px;
+  margin: 9px 0;
+}
+
+.offer-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.offer-title {
+  font-size: 14px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.price {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--green);
+  white-space: nowrap;
+}
+
+.merchant {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.offer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+a {
+  color: var(--blue);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tag {
+  display: inline-block;
+  background: #26394d;
+  color: #c7d8e8;
+  border-radius: 20px;
+  padding: 5px 8px;
+  font-size: 11px;
+}
+
+.empty, .notice {
+  background: var(--panel);
+  border: 1px dashed var(--line);
+  border-radius: 16px;
+  padding: 18px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+footer {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+  padding: 24px 8px;
+}
+
+#message {
+  color: var(--muted);
+  font-size: 12px;
+  min-height: 18px;
+  margin: 8px 2px;
+}
+</style>
+</head>
+
+<body>
+<main>
+
+<header>
+  <div class="brand">
+    <div class="logo">🎮</div>
+    <div>
+      <h1>Pokopia Deal-Finder</h1>
+      <div class="sub">Dein täglicher Preisvergleich</div>
+    </div>
+  </div>
+
+  <button id="refresh">↻ Aktualisieren</button>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">Nintendo Switch 2</div>
+  <h2>Pokémon Pokopia</h2>
+  <p>
+    Vergleiche physische Spielkarten und digitale
+    Download-Angebote.
+  </p>
+
+  <div class="status">
+    <span id="lastChecked">Lade Suchstand …</span>
+    <span id="totalCount">– Angebote</span>
+  </div>
+</section>
+
+<div class="summary">
+
+  <div class="metric">
+    <div class="label">Günstigste Spielkarte</div>
+    <div class="value" id="physicalBest">–</div>
+  </div>
+
+  <div class="metric">
+    <div class="label">Günstigster Digital-Code</div>
+    <div class="value" id="digitalBest">–</div>
+  </div>
+
+</div>
+
+<div class="tabs">
+
+  <button class="tab active" id="physicalTab">
+    Spielkarte
+  </button>
+
+  <button class="tab" id="digitalTab">
+    Digital
+  </button>
+
+  <button class="tab" id="unknownTab">
+    Unklar
+  </button>
+
+</div>
+
+<section>
+  <h3 class="section-title" id="listTitle">
+    Physische Spielkarten
+  </h3>
+
+  <div id="offers">
+    <div class="empty">Angebote werden geladen …</div>
+  </div>
+</section>
+
+<div id="message"></div>
+
+<div class="notice">
+  Hinweis: Prüfe vor dem Kauf immer die tatsächliche
+  Produktversion, Plattform, Lieferkosten und den Händler.
+  Nicht eindeutig zugeordnete Angebote werden separat angezeigt.
+</div>
+
+<footer>
+  Die Suche läuft täglich über GitHub Actions.
+  Diese Seite zeigt den zuletzt gespeicherten Stand aus
+  offers.json.
+</footer>
+
 </main>
+
 <script>
-const DATA_URL="./offers.json";let allOffers=[];let activeType="physical";
-const money=n=>new Intl.NumberFormat("de-DE",{style:"currency",currency:"EUR"}).format(n);
-function classify(o){const t=(o.title||"").toLowerCase();const dig=["download-code","download code","digital code","eshop","e-shop","game key","key cart","digital"];const phy=["spielkarte","game card","cartridge","physisch","physical","at-pegi"];if(dig.some(w=>t.includes(w)))return"digital";if(phy.some(w=>t.includes(w)))return"physical";return"unclear";}
-function safeUrl(raw){try{const u=new URL(raw);return["https:","http:"].includes(u.protocol)?u.href:null}catch{return null}}
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function render(){const p=allOffers.filter(o=>classify(o)==="physical"),d=allOffers.filter(o=>classify(o)==="digital"),u=allOffers.filter(o=>classify(o)==="unclear");document.getElementById("physicalBest").textContent=p.length?money(p[0].price):"–";document.getElementById("digitalBest").textContent=d.length?money(d[0].price):"–";document.getElementById("totalCount").textContent=allOffers.length+" Treffer";const list=activeType==="physical"?p:d;document.getElementById("listTitle").textContent=activeType==="physical"?"Physische Spielkarten":"Digitale Angebote";const el=document.getElementById("offers");if(!list.length){el.innerHTML='<div class="empty">Für diese Kategorie wurden noch keine eindeutig zuordenbaren Angebote gefunden.</div>'}else{el.innerHTML=list.map((o,i)=>{const url=safeUrl(o.url);return `<article class="offer"><div class="offer-top"><div class="offer-title">${esc(o.title||"Pokopia-Angebot")}</div><div class="price">${money(Number(o.price))}</div></div><div class="merchant">${esc(o.merchant||"Händler unbekannt")}${o.delivery?" · "+esc(o.delivery):""}</div><div class="offer-actions"><span class="tag">${i===0?"Günstigster Treffer":"Preisvergleich"}</span>${url?`<a href="${url}" target="_blank" rel="noopener">Zum Angebot ↗</a>`:"<span>Kein Händlerlink</span>"}</div></article>`}).join("")}document.getElementById("message").textContent=u.length?u.length+" Treffer sind nicht eindeutig als physisch oder digital erkennbar und werden nicht falsch zugeordnet.":""}
-async function loadOffers(){const b=document.getElementById("refresh");b.disabled=true;b.textContent="Lädt …";document.getElementById("offers").innerHTML='<div class="empty">Lade Angebote …</div>';try{const r=await fetch(DATA_URL+"?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error("HTTP "+r.status);const data=await r.json();allOffers=(Array.isArray(data.offers)?data.offers:[]).filter(o=>Number.isFinite(Number(o.price))&&Number(o.price)>0).sort((a,b)=>Number(a.price)-Number(b.price));document.getElementById("lastChecked").textContent=data.checked_at?"Letzte Suche: "+new Date(data.checked_at).toLocaleString("de-DE"):"Noch kein Suchzeitpunkt gespeichert";render()}catch(e){document.getElementById("offers").innerHTML='<div class="empty">Preisdaten konnten nicht geladen werden. Prüfe GitHub Pages und ob offers.json im Repository-Hauptordner liegt.</div>';document.getElementById("message").textContent="Ladefehler: "+e.message}finally{b.disabled=false;b.textContent="↻ Aktualisieren"}}
-function tab(t){activeType=t;document.getElementById("physicalTab").classList.toggle("active",t==="physical");document.getElementById("digitalTab").classList.toggle("active",t==="digital");render()}
-document.getElementById("refresh").addEventListener("click",loadOffers);document.getElementById("physicalTab").addEventListener("click",()=>tab("physical"));document.getElementById("digitalTab").addEventListener("click",()=>tab("digital"));if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));loadOffers();
-</script></body></html>
+
+const DATA_URL = "./offers.json";
+
+let allOffers = [];
+
+let activeType = "physical";
+
+const money = n =>
+  new Intl.NumberFormat("de-DE", {
+    style: "currency",
+    currency: "EUR"
+  }).format(n);
+
+
+// Kategorie direkt aus Python übernehmen
+function classify(offer) {
+
+  const type = String(offer.type || "").toLowerCase();
+
+  if (
+    type === "physical" ||
+    type === "digital" ||
+    type === "unknown"
+  ) {
+    return type;
+  }
+
+  return "unknown";
+}
+
+
+// Sichere Händlerlinks
+function safeUrl(raw) {
+
+  try {
+
+    const url = new URL(raw);
+
+    if (
+      url.protocol === "https:" ||
+      url.protocol === "http:"
+    ) {
+      return url.href;
+    }
+
+    return null;
+
+  } catch {
+    return null;
+  }
+}
+
+
+// HTML-Sonderzeichen schützen
+function esc(value) {
+
+  return String(value).replace(
+    /[&<>"']/g,
+    char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char])
+  );
+}
+
+
+// Angebote anzeigen
+function render() {
+
+  const physical = allOffers.filter(
+    o => classify(o) === "physical"
+  );
+
+  const digital = allOffers.filter(
+    o => classify(o) === "digital"
+  );
+
+  const unknown = allOffers.filter(
+    o => classify(o) === "unknown"
+  );
+
+
+  // Beste Preise
+  document.getElementById("physicalBest").textContent =
+    physical.length ? money(physical[0].price) : "–";
+
+  document.getElementById("digitalBest").textContent =
+    digital.length ? money(digital[0].price) : "–";
+
+
+  document.getElementById("totalCount").textContent =
+    allOffers.length + " Treffer";
+
+
+  // Aktuelle Kategorie
+  let list = [];
+  let title = "";
+
+  if (activeType === "physical") {
+    list = physical;
+    title = "Physische Spielkarten";
+  }
+
+  if (activeType === "digital") {
+    list = digital;
+    title = "Digitale Angebote";
+  }
+
+  if (activeType === "unknown") {
+    list = unknown;
+    title = "Nicht eindeutig zugeordnete Angebote";
+  }
+
+
+  document.getElementById("listTitle").textContent = title;
+
+  const container = document.getElementById("offers");
+
+
+  if (!list.length) {
+
+    container.innerHTML =
+      '<div class="empty">Für diese Kategorie wurden keine Angebote gefunden.</div>';
+
+  } else {
+
+    container.innerHTML = list.map((offer, index) => {
+
+      const url = safeUrl(offer.url);
+
+      return `
+        <article class="offer">
+
+          <div class="offer-top">
+
+            <div class="offer-title">
+              ${esc(offer.title || "Pokopia-Angebot")}
+            </div>
+
+            <div class="price">
+              ${money(Number(offer.price))}
+            </div>
+
+          </div>
+
+          <div class="merchant">
+            ${esc(offer.merchant || "Händler unbekannt")}
+            ${offer.delivery ? " · " + esc(offer.delivery) : ""}
+          </div>
+
+          <div class="offer-actions">
+
+            <span class="tag">
+              ${index === 0 ? "Günstigster Treffer" : "Preisvergleich"}
+            </span>
+
+            ${
+              url
+              ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">
+                   Zum Angebot ↗
+                 </a>`
+              : "<span>Kein Händlerlink</span>"
+            }
+
+          </div>
+
+        </article>
+      `;
+
+    }).join("");
+
+  }
+
+
+  document.getElementById("message").textContent =
+    unknown.length
+      ? unknown.length + " Angebote müssen noch geprüft werden."
+      : "";
+
+}
+
+
+// Angebote aus offers.json laden
+async function loadOffers() {
+
+  const button = document.getElementById("refresh");
+
+  button.disabled = true;
+  button.textContent = "Lädt …";
+
+  document.getElementById("offers").innerHTML =
+    '<div class="empty">Lade Angebote …</div>';
+
+  try {
+
+    const response = await fetch(
+      DATA_URL + "?t=" + Date.now(),
+      { cache: "no-store" }
+    );
+
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status);
+    }
+
+    const data = await response.json();
+
+    allOffers = (
+      Array.isArray(data.offers)
+        ? data.offers
+        : []
+    )
+    .filter(offer =>
+      Number.isFinite(Number(offer.price)) &&
+      Number(offer.price) > 0
+    )
+    .sort((a, b) =>
+      Number(a.price) - Number(b.price)
+    );
+
+
+    document.getElementById("lastChecked").textContent =
+      data.checked_at
+        ? "Letzte Suche: " +
+          new Date(data.checked_at).toLocaleString("de-DE")
+        : "Noch kein Suchzeitpunkt gespeichert";
+
+
+    render();
+
+  } catch (error) {
+
+    document.getElementById("offers").innerHTML =
+      '<div class="empty">Preisdaten konnten nicht geladen werden. Prüfe GitHub Pages und offers.json.</div>';
+
+    document.getElementById("message").textContent =
+      "Ladefehler: " + error.message;
+
+  } finally {
+
+    button.disabled = false;
+    button.textContent = "↻ Aktualisieren";
+
+  }
+
+}
+
+
+// Tabs wechseln
+function selectTab(type) {
+
+  activeType = type;
+
+  document.getElementById("physicalTab")
+    .classList.toggle("active", type === "physical");
+
+  document.getElementById("digitalTab")
+    .classList.toggle("active", type === "digital");
+
+  document.getElementById("unknownTab")
+    .classList.toggle("active", type === "unknown");
+
+  render();
+
+}
+
+
+// Buttons verbinden
+document.getElementById("refresh")
+  .addEventListener("click", loadOffers);
+
+document.getElementById("physicalTab")
+  .addEventListener("click", () => selectTab("physical"));
+
+document.getElementById("digitalTab")
+  .addEventListener("click", () => selectTab("digital"));
+
+document.getElementById("unknownTab")
+  .addEventListener("click", () => selectTab("unknown"));
+
+
+// Offline-Unterstützung
+if ("serviceWorker" in navigator) {
+
+  window.addEventListener("load", () => {
+
+    navigator.serviceWorker
+      .register("./sw.js")
+      .catch(error => console.log(error));
+
+  });
+
+}
+
+
+// Start
+loadOffers();
+
+</script>
+
+</body>
+</html>
