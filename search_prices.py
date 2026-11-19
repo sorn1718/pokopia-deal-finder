@@ -11,47 +11,35 @@ BASE = "https://serpapi.com/search.json"
 QUERY = "Pokémon Pokopia Nintendo Switch 2 kaufen"
 
 EXCLUDED = [
-    "erweiterungspass",
-    "expansion pass",
-    "skin",
-    "cover",
-    "vinyl",
-    "hülle",
-    "case",
-    "schlüsselanhänger",
-    "keychain",
-    "controller",
-    "tasche",
-    "schutzfolie",
-    "sticker",
-    "figur",
-    "plüschtier",
-    "poster",
-    "soundtrack",
-    "bundle",
-    "konsole",
-    "console",
-    "joycon",
-    "merchandise",
-    "zubehör",
-    "accessory",
-    "lösungsbuch",
-    "guide"
+    "erweiterungspass", "expansion pass", "skin",
+    "cover", "vinyl", "hülle", "case",
+    "schlüsselanhänger", "keychain", "controller",
+    "tasche", "schutzfolie", "sticker", "figur",
+    "plüschtier", "poster", "soundtrack",
+    "bundle", "konsole", "console", "joycon",
+    "merchandise", "zubehör", "accessory",
+    "lösungsbuch", "guide"
 ]
 
 DIGITAL = [
-    "download-code",
-    "download code",
-    "digital code",
-    "eshop",
-    "e-shop",
-    "game key",
-    "download",
+    "download-code", "download code", "digital code",
+    "eshop", "e-shop", "game key", "download",
     "digital version"
 ]
 
+# FEHLENDE LISTE ERGÄNZT
+PHYSICAL = [
+    "spielkarte", "game card", "cartridge",
+    "physisch", "physical", "at-pegi"
+]
+
+
+# =================================
+# KATEGORIE ERMITTELN
+# =================================
 
 def category(title):
+
     t = title.lower()
 
     if any(word in t for word in EXCLUDED):
@@ -66,6 +54,9 @@ def category(title):
     return "unknown"
 
 
+# =================================
+# HÄNDLERLINK PRÜFEN
+# =================================
 
 def valid_store_link(link):
 
@@ -169,70 +160,75 @@ for product_id in product_ids:
 
         stores = product.get("stores", [])
 
-        
-for store in stores:
+        # WICHTIG: Diese Schleife gehört in den try-Block
+        for store in stores:
 
-    store_title = store.get("title") or ""
+            store_title = store.get("title") or ""
 
-    product_title = (
-        product.get("title")
-        or products[product_id]
-    )
+            product_title = (
+                product.get("title")
+                or products[product_id]
+            )
 
-    # Beide Titel für die Prüfung verwenden
-    combined_title = store_title + " " + product_title
+            # Beide Titel prüfen
+            combined_title = store_title + " " + product_title
 
-    if "pokopia" not in combined_title.lower():
-        continue
+            if "pokopia" not in combined_title.lower():
+                continue
 
-    kind = category(combined_title)
+            kind = category(combined_title)
 
-    if kind is None:
-        continue
+            if kind is None:
+                print("AUSGESCHLOSSEN:", combined_title)
+                continue
 
-    price = store.get("extracted_price")
-    link = store.get("link")
+            price = store.get("extracted_price")
 
-    if price is None or not valid_store_link(link):
-        continue
+            link = store.get("link")
 
-    try:
-        price = float(price)
-    except (ValueError, TypeError):
-        continue
+            if price is None:
+                continue
 
-    if price <= 0:
-        continue
+            if not valid_store_link(link):
+                continue
 
-    merchant = store.get("name", "Unbekannt")
+            try:
+                price = float(price)
+            except (ValueError, TypeError):
+                continue
 
-    unique_id = (merchant.lower(), link, kind)
+            if price <= 0:
+                continue
 
-    if unique_id in seen:
-        continue
+            merchant = store.get("name") or "Unbekannt"
 
-    seen.add(unique_id)
+            # Doppelte Angebote vermeiden
+            unique_id = (merchant.lower(), link, kind)
 
-    offer = {
-        "title": store_title or product_title,
-        "price": round(price, 2),
-        "currency": "EUR",
-        "merchant": merchant,
-        "url": link,
-        "type": kind,
-        "delivery": store.get("shipping", "")
-    }
+            if unique_id in seen:
+                continue
 
-    offers.append(offer)
+            seen.add(unique_id)
 
-    print(
-        "ANGEBOT:",
-        kind,
-        merchant,
-        price,
-        "Euro"
-    )
+            offer = {
+                "title": store_title or product_title,
+                "price": round(price, 2),
+                "currency": "EUR",
+                "merchant": merchant,
+                "url": link,
+                "type": kind,
+                "delivery": store.get("shipping", "")
+            }
 
+            offers.append(offer)
+
+            print(
+                "ANGEBOT:",
+                kind,
+                merchant,
+                price,
+                "Euro"
+            )
 
     except Exception as error:
 
@@ -257,6 +253,11 @@ physical = [
 digital = [
     o for o in offers
     if o["type"] == "digital"
+]
+
+unknown = [
+    o for o in offers
+    if o["type"] == "unknown"
 ]
 
 
@@ -290,7 +291,9 @@ data = {
 
     "physical_offers": physical,
 
-    "digital_offers": digital
+    "digital_offers": digital,
+
+    "unknown_offers": unknown
 }
 
 
@@ -316,6 +319,8 @@ print("PHYSISCH:", len(physical))
 
 print("DIGITAL:", len(digital))
 
+print("UNKLAR:", len(unknown))
+
 if physical:
 
     print(
@@ -331,6 +336,17 @@ if digital:
         digital[0]["price"],
         "Euro"
     )
+
+if unknown:
+
+    print("NICHT EINDEUTIG ZUGEORDNETE ANGEBOTE:")
+
+    for offer in unknown:
+        print(
+            offer["merchant"],
+            offer["price"],
+            "Euro"
+        )
 
 print("--------------------------------")
 
