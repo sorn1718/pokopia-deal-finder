@@ -3,33 +3,55 @@ import json
 import os
 import requests
 from datetime import datetime, timezone
+from urllib.parse import urlparse
 
 API_KEY = os.environ["SERPAPI_API_KEY"]
 BASE = "https://serpapi.com/search.json"
 
-QUERY = "Pokémon Pokopia Nintendo Switch 2 Spiel kaufen"
+QUERY = "Pokémon Pokopia Nintendo Switch 2 kaufen"
 
 EXCLUDED = [
-    "erweiterungspass", "expansion pass", "skin", "cover",
-    "vinyl", "hülle", "case", "schlüsselanhänger",
-    "keychain", "controller", "tasche", "schutzfolie",
-    "sticker", "figur", "plüschtier", "poster",
-    "soundtrack", "bundle", "konsole", "console",
-    "joycon", "merchandise", "zubehör", "accessory",
-    "lösungsbuch", "guide"
+    "erweiterungspass",
+    "expansion pass",
+    "skin",
+    "cover",
+    "vinyl",
+    "hülle",
+    "case",
+    "schlüsselanhänger",
+    "keychain",
+    "controller",
+    "tasche",
+    "schutzfolie",
+    "sticker",
+    "figur",
+    "plüschtier",
+    "poster",
+    "soundtrack",
+    "bundle",
+    "konsole",
+    "console",
+    "joycon",
+    "merchandise",
+    "zubehör",
+    "accessory",
+    "lösungsbuch",
+    "guide"
 ]
 
 DIGITAL = [
-    "download-code", "download code", "digital code",
-    "eshop", "e-shop", "game key", "download"
-]
-
-PHYSICAL = [
-    "spielkarte", "game card", "cartridge",
-    "physisch", "physical", "at-pegi"
+    "download-code",
+    "download code",
+    "digital code",
+    "eshop",
+    "e-shop",
+    "game key",
+    "download",
+    "digital version"
 ]
 
 def category(title):
+
     t = title.lower()
 
     if any(word in t for word in EXCLUDED):
@@ -38,26 +60,34 @@ def category(title):
     if any(word in t for word in DIGITAL):
         return "digital"
 
-    if any(word in t for word in PHYSICAL):
-        return "physical"
-
-    return None
+    # Nicht ausdrücklich digital gekennzeichnete
+    # Händlerangebote werden als physisch geführt.
+    return "physical"
 
 
 def valid_store_link(link):
+
     if not link:
         return False
 
-    link = link.lower()
+    try:
+        parsed = urlparse(link)
 
-    return (
-        link.startswith("https://")
-        and "google." not in link.split("/")[2]
-        and "serpapi.com" not in link
-    )
+        return (
+            parsed.scheme == "https"
+            and parsed.hostname is not None
+            and "google." not in parsed.hostname
+            and "serpapi.com" not in parsed.hostname
+        )
+
+    except Exception:
+        return False
 
 
-# 1. Google Shopping durchsuchen
+# =================================
+# 1. GOOGLE SHOPPING SUCHEN
+# =================================
+
 response = requests.get(
     BASE,
     params={
@@ -72,16 +102,22 @@ response = requests.get(
 )
 
 response.raise_for_status()
+
 shopping = response.json().get("shopping_results", [])
 
 print("Shopping-Ergebnisse:", len(shopping))
 
-# 2. Passende Produkt-IDs sammeln
+
+# =================================
+# 2. PRODUKTSEITEN SAMMELN
+# =================================
+
 products = {}
 
 for item in shopping:
+
     title = item.get("title", "")
-    
+
     if "pokopia" not in title.lower():
         continue
 
@@ -93,17 +129,23 @@ for item in shopping:
     if product_id:
         products[product_id] = title
 
-# Maximal vier unterschiedliche Produktseiten abfragen
+
 product_ids = list(products.keys())[:4]
 
-print("Produktseiten werden geprüft:", len(product_ids))
+print("Produktseiten:", len(product_ids))
+
+
+# =================================
+# 3. HÄNDLERANGEBOTE ABRUFEN
+# =================================
 
 offers = []
+seen = set()
 
-# 3. Händlerangebote mit direkten Links abrufen
 for product_id in product_ids:
 
     try:
+
         product_response = requests.get(
             BASE,
             params={
@@ -118,32 +160,65 @@ for product_id in product_ids:
         )
 
         product_response.raise_for_status()
+
         product_data = product_response.json()
 
         product = product_data.get("product_results", {})
+
         stores = product.get("stores", [])
 
         for store in stores:
 
-            title = store.get("title") or product.get("title") or products[product_id]
-            combined_title = title + " " + products[product_id]
+            # Nur den tatsächlichen Händlertitel verwenden
+            title = (
+                store.get("title")
+                or product.get("title")
+                or products[product_id]
+            )
 
-            kind = category(combined_title)
+            if "pokopia" not in title.lower():
+                continue
+
+            kind = category(title)
 
             if kind is None:
+                print("AUSGESCHLOSSEN:", title)
                 continue
 
             price = store.get("extracted_price")
+
+            if price is None:
+                continue
+
+            try:
+                price = float(price)
+            except (ValueError, TypeError):
+                continue
+
+            if price <= 0:
+                continue
+
             link = store.get("link")
 
-            if price is None or not valid_store_link(link):
+            if not valid_store_link(link):
+                print("Ungültiger Händlerlink:", title)
                 continue
+
+            merchant = store.get("name", "Unbekannt")
+
+            # Doppelte Angebote vermeiden
+            unique_id = (merchant.lower(), link, kind)
+
+            if unique_id in seen:
+                continue
+
+            seen.add(unique_id)
 
             offer = {
                 "title": title,
-                "price": float(price),
+                "price": round(price, 2),
                 "currency": "EUR",
-                "merchant": store.get("name", "Unbekannt"),
+                "merchant": merchant,
                 "url": link,
                 "type": kind,
                 "delivery": store.get("shipping", "")
@@ -152,35 +227,111 @@ for product_id in product_ids:
             offers.append(offer)
 
             print(
-                "DIREKTANGEBOT:",
-                offer["merchant"],
-                offer["price"],
-                offer["url"]
+                "ANGEBOT:",
+                kind,
+                merchant,
+                price,
+                "Euro"
             )
 
     except Exception as error:
-        print("Produkt konnte nicht geladen werden:", error)
 
-# 4. Nach Preis sortieren
+        print(
+            "Fehler bei Produkt",
+            product_id,
+            error
+        )
+
+
+# =================================
+# 4. PREISE SORTIEREN
+# =================================
+
 offers.sort(key=lambda x: x["price"])
 
-physical = [o for o in offers if o["type"] == "physical"]
-digital = [o for o in offers if o["type"] == "digital"]
+physical = [
+    o for o in offers
+    if o["type"] == "physical"
+]
+
+digital = [
+    o for o in offers
+    if o["type"] == "digital"
+]
+
+
+# =================================
+# 5. ERGEBNIS SPEICHERN
+# =================================
 
 data = {
     "product": "Pokémon Pokopia Nintendo Switch 2",
-    "checked_at": datetime.now(timezone.utc).isoformat(),
+
+    "checked_at": datetime.now(
+        timezone.utc
+    ).isoformat(),
+
     "offers": offers,
-    "best_price": offers[0]["price"] if offers else None,
-    "physical_best": physical[0]["price"] if physical else None,
-    "digital_best": digital[0]["price"] if digital else None
+
+    "best_price": (
+        offers[0]["price"]
+        if offers else None
+    ),
+
+    "physical_best": (
+        physical[0]["price"]
+        if physical else None
+    ),
+
+    "digital_best": (
+        digital[0]["price"]
+        if digital else None
+    ),
+
+    "physical_offers": physical,
+
+    "digital_offers": digital
 }
 
+
 with open("offers.json", "w", encoding="utf-8") as file:
-    json.dump(data, file, ensure_ascii=False, indent=2)
+
+    json.dump(
+        data,
+        file,
+        ensure_ascii=False,
+        indent=2
+    )
+
+
+# =================================
+# 6. AUSGABE
+# =================================
 
 print("--------------------------------")
-print("Direkte Händlerangebote:", len(offers))
-print("Physische Angebote:", len(physical))
-print("Digitale Angebote:", len(digital))
+
+print("GESAMTANGEBOTE:", len(offers))
+
+print("PHYSISCH:", len(physical))
+
+print("DIGITAL:", len(digital))
+
+if physical:
+
+    print(
+        "BESTER PHYSISCHER PREIS:",
+        physical[0]["price"],
+        "Euro"
+    )
+
+if digital:
+
+    print(
+        "BESTER DIGITALER PREIS:",
+        digital[0]["price"],
+        "Euro"
+    )
+
 print("--------------------------------")
+
+print("POKOPIA DEAL FINDER FERTIG")
