@@ -27,7 +27,6 @@ DIGITAL = [
     "digital version"
 ]
 
-# FEHLENDE LISTE ERGÄNZT
 PHYSICAL = [
     "spielkarte", "game card", "cartridge",
     "physisch", "physical", "at-pegi"
@@ -35,7 +34,7 @@ PHYSICAL = [
 
 
 # =================================
-# KATEGORIE ERMITTELN
+# 1. KATEGORIE ERMITTELN
 # =================================
 
 def category(title):
@@ -55,7 +54,7 @@ def category(title):
 
 
 # =================================
-# HÄNDLERLINK PRÜFEN
+# 2. HÄNDLERLINK PRÜFEN
 # =================================
 
 def valid_store_link(link):
@@ -78,7 +77,7 @@ def valid_store_link(link):
 
 
 # =================================
-# 1. GOOGLE SHOPPING SUCHEN
+# 3. GOOGLE SHOPPING SUCHEN
 # =================================
 
 response = requests.get(
@@ -102,7 +101,7 @@ print("Shopping-Ergebnisse:", len(shopping))
 
 
 # =================================
-# 2. PRODUKTSEITEN SAMMELN
+# 4. PRODUKTSEITEN SAMMELN
 # =================================
 
 products = {}
@@ -129,7 +128,7 @@ print("Produktseiten:", len(product_ids))
 
 
 # =================================
-# 3. HÄNDLERANGEBOTE ABRUFEN
+# 5. HÄNDLERANGEBOTE ABRUFEN
 # =================================
 
 offers = []
@@ -159,16 +158,16 @@ for product_id in product_ids:
         product = product_data.get("product_results", {})
 
         stores = product.get("stores", [])
-        
+
+        # DEBUG-AUSGABEN
         print("DEBUG Produkt:", product.get("title"))
         print("DEBUG Produktdaten:", list(product.keys()))
         print("DEBUG Händleranzahl:", len(stores))
 
-     for s in stores[:5]:
-    print("DEBUG Händler:", s)
+        for s in stores[:5]:
+            print("DEBUG Händler:", s)
 
-
-        # WICHTIG: Diese Schleife gehört in den try-Block
+        # HÄNDLERANGEBOTE VERARBEITEN
         for store in stores:
 
             store_title = store.get("title") or ""
@@ -178,7 +177,6 @@ for product_id in product_ids:
                 or products[product_id]
             )
 
-            # Beide Titel prüfen
             combined_title = store_title + " " + product_title
 
             if "pokopia" not in combined_title.lower():
@@ -191,7 +189,6 @@ for product_id in product_ids:
                 continue
 
             price = store.get("extracted_price")
-
             link = store.get("link")
 
             if price is None:
@@ -210,7 +207,6 @@ for product_id in product_ids:
 
             merchant = store.get("name") or "Unbekannt"
 
-            # Doppelte Angebote vermeiden
             unique_id = (merchant.lower(), link, kind)
 
             if unique_id in seen:
@@ -248,7 +244,7 @@ for product_id in product_ids:
 
 
 # =================================
-# 4. PREISE SORTIEREN
+# 6. PREISE SORTIEREN
 # =================================
 
 offers.sort(key=lambda x: x["price"])
@@ -270,7 +266,7 @@ unknown = [
 
 
 # =================================
-# 5. ERGEBNIS SPEICHERN
+# 7. ERGEBNIS SPEICHERN
 # =================================
 
 data = {
@@ -316,7 +312,7 @@ with open("offers.json", "w", encoding="utf-8") as file:
 
 
 # =================================
-# 6. AUSGABE
+# 8. ERGEBNIS AUSGEBEN
 # =================================
 
 print("--------------------------------")
@@ -347,7 +343,7 @@ if digital:
 
 if unknown:
 
-    print("NICHT EINDEUTIG ZUGEORDNETE ANGEBOTE:")
+    print("NICHT EINDEUTIGE ANGEBOTE:")
 
     for offer in unknown:
         print(
