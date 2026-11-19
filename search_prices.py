@@ -37,53 +37,41 @@ PHYSICAL = [
 ]
 
 
-# =================================
-# 1. KATEGORIE ERMITTELN
-# =================================
-
 def contains_any(text, words):
     text = (text or "").lower()
     return any(word in text for word in words)
 
 
-def category(store_title, product_title="", search_title=""):
+# =================================
+# 1. PRODUKTGRUPPE ERMITTELN
+# =================================
 
-    store = (store_title or "").lower()
+def get_product_group(product_title, search_title):
+
     product = (product_title or "").lower()
     search = (search_title or "").lower()
 
-    if contains_any(store, EXCLUDED):
-        return None
-
-    # Eindeutige Angaben im Händlertitel haben Vorrang
-    if contains_any(store, DIGITAL):
-        return "digital"
-
-    if contains_any(store, PHYSICAL):
-        return "physical"
-
-    # Danach die Produktseite prüfen
+    # Digital-Code-Produktseiten eindeutig erkennen
     if contains_any(product, DIGITAL):
         return "digital"
 
+    # Eindeutig physische Produktseiten
     if contains_any(product, PHYSICAL):
         return "physical"
 
-    # Zuletzt den ursprünglichen Shopping-Titel prüfen
+    # Shopping-Suchergebnis als zusätzliche Information
     if contains_any(search, DIGITAL):
         return "digital"
 
     if contains_any(search, PHYSICAL):
         return "physical"
 
-    # Ein normaler Pokopia-Produktdatensatz ohne Digital-Kennzeichnung
-    # wird als physische Ausgabe behandelt, wenn Switch 2 genannt ist.
-    if (
-        "switch 2" in product
-        or "switch2" in product
-        or "switch 2" in search
-        or "switch2" in search
-    ):
+    # Die normale Pokopia-Switch-2-Suche ist die physische Ausgabe,
+    # sofern die Produktseite nicht ausdrücklich Download-Code nennt.
+    if "pokopia" in product and "download-code" not in product:
+        return "physical"
+
+    if "pokopia" in search and "switch 2" in search:
         return "physical"
 
     return "unknown"
@@ -225,25 +213,14 @@ for product_id in product_ids:
 
         search_title = products[product_id]
 
+        group_type = get_product_group(
+            product_title,
+            search_title
+        )
+
         print("--------------------------------")
         print("DEBUG PRODUKT:", product_title)
         print("DEBUG HÄNDLERANZAHL:", len(stores))
-
-        # Produktgruppe einmal zentral bestimmen
-        if contains_any(product_title, DIGITAL) or contains_any(search_title, DIGITAL):
-            group_type = "digital"
-        elif contains_any(product_title, PHYSICAL) or contains_any(search_title, PHYSICAL):
-            group_type = "physical"
-        elif (
-            "switch 2" in product_title.lower()
-            or "switch2" in product_title.lower()
-            or "switch 2" in search_title.lower()
-            or "switch2" in search_title.lower()
-        ):
-            group_type = "physical"
-        else:
-            group_type = "unknown"
-
         print("PRODUKTGRUPPE:", group_type)
 
         for store in stores:
@@ -257,14 +234,17 @@ for product_id in product_ids:
                 print("AUSGESCHLOSSEN:", store_title)
                 continue
 
-            # Eindeutige Händlerangaben dürfen die Gruppe korrigieren.
-            # Sonst bleibt die Kategorie der Produktgruppe maßgeblich.
-            if contains_any(store_title, DIGITAL):
+            # Produktgruppe hat Vorrang.
+            # Händlertext darf nur dann genauer einstufen,
+            # wenn die Produktgruppe noch unbekannt ist.
+            if group_type != "unknown":
+                kind = group_type
+            elif contains_any(store_title, DIGITAL):
                 kind = "digital"
             elif contains_any(store_title, PHYSICAL):
                 kind = "physical"
             else:
-                kind = group_type
+                kind = "unknown"
 
             price = get_price(store)
 
