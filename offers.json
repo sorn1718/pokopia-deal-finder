@@ -1,48 +1,10 @@
 {
   "product": "Pokémon Pokopia Nintendo Switch 2",
-  "checked_at": "2026-11-19T06:52:56.151149+00:00",
-  "offers": [
-    {
-      "title": "Pokemon Pokopia (deutsch spielbar) (AT PEGI) (Nintendo Switch 2)",
-      "price": 72.37,
-      "currency": "EUR",
-      "merchant": "Games2Game",
-      "url": "https://www.games2game.at/nintendo-switch-2/spiele-139/pokemon-pokopia-deutsch-spielbar-at-pegi-nintendo-switch-2.html",
-      "type": "physical",
-      "delivery": "+ 4,99 €"
-    },
-    {
-      "title": "Pokémon Pokopia - Game-key Card - Nintendo Switch 2 - Neu & Ovp",
-      "price": 90.89,
-      "currency": "EUR",
-      "merchant": "eBay - lotus-icafe",
-      "url": "https://www.ebay.de/itm/358845984405?chn=ps&_ul=DE&mkevt=1&mkcid=28&google_free_listing_action=view_item",
-      "type": "physical",
-      "delivery": "Kostenlos"
-    }
-  ],
-  "best_price": 72.37,
-  "physical_best": 72.37,
+  "checked_at": "2026-11-19T06:58:39.989144+00:00",
+  "offers": [],
+  "best_price": null,
+  "physical_best": null,
   "digital_best": null,
-  "physical_offers": [
-    {
-      "title": "Pokemon Pokopia (deutsch spielbar) (AT PEGI) (Nintendo Switch 2)",
-      "price": 72.37,
-      "currency": "EUR",
-      "merchant": "Games2Game",
-      "url": "https://www.games2game.at/nintendo-switch-2/spiele-139/pokemon-pokopia-deutsch-spielbar-at-pegi-nintendo-switch-2.html",
-      "type": "physical",
-      "delivery": "+ 4,99 €"
-    },
-    {
-      "title": "Pokémon Pokopia - Game-key Card - Nintendo Switch 2 - Neu & Ovp",
-      "price": 90.89,
-      "currency": "EUR",
-      "merchant": "eBay - lotus-icafe",
-      "url": "https://www.ebay.de/itm/358845984405?chn=ps&_ul=DE&mkevt=1&mkcid=28&google_free_listing_action=view_item",
-      "type": "physical",
-      "delivery": "Kostenlos"
-    }
-  ],
+  "physical_offers": [],
   "digital_offers": []
 }
