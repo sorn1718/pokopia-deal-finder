@@ -1,35 +1,13 @@
 {
   "product": "Pokémon Pokopia Nintendo Switch 2",
-  "checked_at": "2026-11-21T13:32:35.892068+00:00",
+  "checked_at": "2026-11-22T08:11:22.594765+00:00",
   "offers": [
-    {
-      "title": "Pokémon Pokopia - Nintendo Switch 2",
-      "price": 60.71,
-      "currency": "EUR",
-      "merchant": "Amazon.de",
-      "url": "https://www.amazon.de/Pok%C3%A9mon-Pokopia-Nintendo-Switch-2/dp/B0G1V1FRGM?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=A3JWKAKR8XB7XF&language=de_DE",
-      "type": "physical",
-      "delivery": "Kostenlos",
-      "item_price": 60.71,
-      "total_price": 60.71
-    },
-    {
-      "title": "Nintendo Switch 2 Pokémon Pokopia (Code in a Box), Code in a Box",
-      "price": 65.91,
-      "currency": "EUR",
-      "merchant": "OTTO",
-      "url": "https://www.otto.de/p/pokemon-pokopia-code-in-a-box-nintendo-switch-2-C2042915245/?variationId=2042915246&utm_source=ogs",
-      "type": "physical",
-      "delivery": "+ 4,95 €",
-      "item_price": 60.96,
-      "total_price": 65.91
-    },
     {
       "title": "SW2 Pokémon Pokopia - [Nintendo Switch 2]",
       "price": 69.99,
       "currency": "EUR",
       "merchant": "MediaMarkt DE",
-      "url": "https://www.mediamarkt.de/de/product/_sw2-pokemon-pokopia-nintendo-switch-2-3042133.html?utm_source=google&utm_medium=v2-seo-sho&srsltid=AYCX9vKPGn5RLJRa9hfW5dvPHvKzfPftTLVxbqVn5mErbd2n2dMZMpAvdJs",
+      "url": "https://www.mediamarkt.de/de/product/_sw2-pokemon-pokopia-nintendo-switch-2-3042133.html?utm_source=google&utm_medium=v2-seo-sho&srsltid=AYCX9vLt8l5Sb7RfSv4gLJumHk3nnYFd6Z0Tm_JT_s6LA3lcaUmF5i3zEtQ",
       "type": "digital",
       "delivery": "Kostenlos",
       "item_price": 69.99,
@@ -40,39 +18,39 @@
       "price": 69.99,
       "currency": "EUR",
       "merchant": "saturn.de",
-      "url": "https://www.saturn.de/de/product/_sw2-pokemon-pokopia-nintendo-switch-2-3042133.html?utm_source=google&utm_medium=seo-product%20feed&srsltid=AYCX9vLa5TK_WjqWYoUy6AfhXnIhmed4mIYa6eyA5vnt2Ly0vcYtnJNk9zo",
+      "url": "https://www.saturn.de/de/product/_sw2-pokemon-pokopia-nintendo-switch-2-3042133.html?utm_source=google&utm_medium=seo-product%20feed&srsltid=AYCX9vLx_0iPpgoY8PDNLO5jIJfilOCwgsGadOhfz6ZvH3rtByhnhnizh0g",
       "type": "digital",
       "delivery": "Kostenlos",
       "item_price": 69.99,
       "total_price": 69.99
+    },
+    {
+      "title": "Nintendo Pokémon Pokopia – Switch 2 – édition australienne",
+      "price": 76.55,
+      "currency": "EUR",
+      "merchant": "Cash For You",
+      "url": "https://shop.cashforyou.ch/de/products/nintendo-pokemon-pokopia-switch-2-edition-australienne?variant=65222982140281&country=AT&currency=EUR&utm_medium=product_sync&utm_source=google&utm_content=sag_organic&utm_campaign=sag_organic&srsltid=AYCX9vJCmzRu2npsWKoAD1LEEVDbHpqEAErYd2KWKXyCMgXI5-NvAXV4sv8",
+      "type": "physical",
+      "delivery": "+ 20,60 €",
+      "item_price": 55.95,
+      "total_price": 76.55
     }
   ],
-  "best_price": 60.71,
-  "physical_best": 60.71,
+  "best_price": 69.99,
+  "physical_best": 76.55,
   "digital_best": 69.99,
   "unknown_best": null,
   "physical_offers": [
     {
-      "title": "Pokémon Pokopia - Nintendo Switch 2",
-      "price": 60.71,
+      "title": "Nintendo Pokémon Pokopia – Switch 2 – édition australienne",
+      "price": 76.55,
       "currency": "EUR",
-      "merchant": "Amazon.de",
-      "url": "https://www.amazon.de/Pok%C3%A9mon-Pokopia-Nintendo-Switch-2/dp/B0G1V1FRGM?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=A3JWKAKR8XB7XF&language=de_DE",
+      "merchant": "Cash For You",
+      "url": "https://shop.cashforyou.ch/de/products/nintendo-pokemon-pokopia-switch-2-edition-australienne?variant=65222982140281&country=AT&currency=EUR&utm_medium=product_sync&utm_source=google&utm_content=sag_organic&utm_campaign=sag_organic&srsltid=AYCX9vJCmzRu2npsWKoAD1LEEVDbHpqEAErYd2KWKXyCMgXI5-NvAXV4sv8",
       "type": "physical",
-      "delivery": "Kostenlos",
-      "item_price": 60.71,
-      "total_price": 60.71
-    },
-    {
-      "title": "Nintendo Switch 2 Pokémon Pokopia (Code in a Box), Code in a Box",
-      "price": 65.91,
-      "currency": "EUR",
-      "merchant": "OTTO",
-      "url": "https://www.otto.de/p/pokemon-pokopia-code-in-a-box-nintendo-switch-2-C2042915245/?variationId=2042915246&utm_source=ogs",
-      "type": "physical",
-      "delivery": "+ 4,95 €",
-      "item_price": 60.96,
-      "total_price": 65.91
+      "delivery": "+ 20,60 €",
+      "item_price": 55.95,
+      "total_price": 76.55
     }
   ],
   "digital_offers": [
@@ -81,7 +59,7 @@
       "price": 69.99,
       "currency": "EUR",
       "merchant": "MediaMarkt DE",
-      "url": "https://www.mediamarkt.de/de/product/_sw2-pokemon-pokopia-nintendo-switch-2-3042133.html?utm_source=google&utm_medium=v2-seo-sho&srsltid=AYCX9vKPGn5RLJRa9hfW5dvPHvKzfPftTLVxbqVn5mErbd2n2dMZMpAvdJs",
+      "url": "https://www.mediamarkt.de/de/product/_sw2-pokemon-pokopia-nintendo-switch-2-3042133.html?utm_source=google&utm_medium=v2-seo-sho&srsltid=AYCX9vLt8l5Sb7RfSv4gLJumHk3nnYFd6Z0Tm_JT_s6LA3lcaUmF5i3zEtQ",
       "type": "digital",
       "delivery": "Kostenlos",
       "item_price": 69.99,
@@ -92,7 +70,7 @@
       "price": 69.99,
       "currency": "EUR",
       "merchant": "saturn.de",
-      "url": "https://www.saturn.de/de/product/_sw2-pokemon-pokopia-nintendo-switch-2-3042133.html?utm_source=google&utm_medium=seo-product%20feed&srsltid=AYCX9vLa5TK_WjqWYoUy6AfhXnIhmed4mIYa6eyA5vnt2Ly0vcYtnJNk9zo",
+      "url": "https://www.saturn.de/de/product/_sw2-pokemon-pokopia-nintendo-switch-2-3042133.html?utm_source=google&utm_medium=seo-product%20feed&srsltid=AYCX9vLx_0iPpgoY8PDNLO5jIJfilOCwgsGadOhfz6ZvH3rtByhnhnizh0g",
       "type": "digital",
       "delivery": "Kostenlos",
       "item_price": 69.99,
